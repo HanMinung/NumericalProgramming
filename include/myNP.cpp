@@ -1,9 +1,9 @@
 /*----------------------------------------------------------------\
 @ Numerical Methods by Young-Keun Kim - Handong Global University
 
-Author           : [ÇÑ¹Î¿õ]
+Author           : HanMinung
 Created          : 26-03-2018
-Modified         : 09-08-2022
+Modified         : 10-02-2022
 Language/ver     : C++ in MSVS2019
 
 Description      : myNM.h
@@ -502,21 +502,21 @@ double Trapz(double x[], double y[], int m) {
 double  simpson13(double x[], double y[], int m) {
 
 	double I = 0;
-	double Interval = x[1] - x[0];
-	
-	I = y[0] + y[m - 1] + 4 * y[m-1];
+	double h = x[1] - x[0];
 
-	FOR_LOOP(i, 1, m - 2, 2) {
+	I = y[0] + y[m-1] + 4 * y[m-2];
 
-		I += (4 * y[i]) + (2 * y[i+1]);
+	FOR_LOOP(i, 1, m-2, 2) {
+
+		I += (4 * y[i]) + (2 * y[i + 1]);
 
 	}
 
-	return I * (Interval / 3);
+	return I * (h / 3);
 
 }
 
-// not-evenly distributed data & function : Simpson 13
+// Call function : Simpson 13
 double Integral(double func(const double x), double a, double b, int N) {
 
 	double I = 0;
@@ -555,6 +555,4 @@ double	Integral_Simpson_38(double func(const double x), double a, double b, int 
 	return h * I * 3 / 8;
 
 }
-
-
 

@@ -3,12 +3,12 @@
 /*----------------------------------------------------------------\
 @ Numerical Methods by Young-Keun Kim - Handong Global University
 
-Author           : [ÇÑ¹Î¿õ]
+Author           : HanMinung
 Created          : 26-03-2018
-Modified         : 08-09-2022
+Modified         : 10-02-2022
 Language/ver     : C++ in MSVS2019
 
-Description      : myNM.cpp
+Description      : myNP.cpp
 ----------------------------------------------------------------*/
 
 #define		CRT_SECURE_NO_WARNINGS
