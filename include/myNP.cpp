@@ -3,7 +3,7 @@
 
 Author           : HanMinung
 Created          : 26-03-2018
-Modified         : 10-02-2022
+Modified         : 10-12-2022
 Language/ver     : C++ in MSVS2019
 
 Description      : myNM.h
@@ -139,6 +139,29 @@ double	SinTaylor_2(double _x) {
 	} while (N < N_max && rel_chg >= epsilon);
 
 
+	return S_N;
+
+}
+
+double ExpTaylor(double _x){
+
+	int N_max = 20;
+	int N = 0;
+	double epsilon = 1e-5;
+	double S_N = 0, S_N_prev = 0, rel_chg = 0;
+	
+	do {
+	
+		N++;
+		S_N_prev = S_N;
+		S_N = 0;
+	
+		for (int k = 0; k < N; k++)	S_N += pow(_x, k) / Factorial(k);
+	
+		rel_chg = fabs((S_N - S_N_prev) / S_N_prev);
+	
+	} while (N < N_max && rel_chg >= epsilon);
+	
 	return S_N;
 
 }
@@ -401,8 +424,8 @@ void gradientFunc(double func(const double x), double x[], double dydx[], int m)
 	free(y);
 }
 
-// gradient2D_Func : 2계 미분 함수
-void acceleration(double func(const double x), double x[], double dy2dx2[], int m) {
+// 2계 미분함수 : x (array) , y (function)
+void gradient2D(double func(const double x), double x[], double dy2dx2[], int m) {
 
 	double* y = (double*)malloc(sizeof(double) * m);
 
@@ -412,7 +435,7 @@ void acceleration(double func(const double x), double x[], double dy2dx2[], int 
 	}
 
 	else {
-		printf("WARNING!: Legth of x and y are different\n\n\n");
+		printf("WARNING!: Length of x and y is different\n\n\n");
 
 		return;
 	}
@@ -443,6 +466,42 @@ void acceleration(double func(const double x), double x[], double dy2dx2[], int 
 	free(y);
 
 }
+
+
+// 2계 미분함수 : x,y 모두 array
+void gradient2D_array(double x[], double y[],double dy2dx2[], int m) {
+
+	double h = 0;
+
+	if (sizeof(x) != sizeof(y)){ 
+		
+		printf("Warning ! : Length of x and y is different\n\n\n"); 
+
+		return;
+	}
+
+	h = x[1] - x[0];
+
+	//Forward : Four-point forward differentiation
+	dy2dx2[0] = (2 * y[0] - 5 * y[1] + 4 * y[2] - y[3]) / (h * h);
+
+	//Three - point central differenciation
+	FOR_LOOP(k,1,m-1,1) {
+
+		h = x[k + 1] - x[k];
+
+		dy2dx2[k] = (y[k + 1] - 2 * y[k] + y[k - 1]) / (h * h);
+
+	}
+
+	//Backward : Four-point backward differentiation
+	
+	h = x[m] - x[m-1];
+
+	dy2dx2[m - 1] = (-y[m - 4] + 4 * y[m - 3] - 5 * y[m - 2] + 2 * y[m - 1]) / (h * h);
+
+}
+
 
 /*		Want to know specific Y value according to X_in		*/
 void Function_call(double func(const double x), double X_in) {
@@ -556,3 +615,42 @@ double	Integral_Simpson_38(double func(const double x), double a, double b, int 
 
 }
 
+
+/*--------------------------------------------------------------------------------------------------------*/
+
+double lagrange_1st(double x, double x0, double x1, double y0, double y1) {
+
+	double f_x = y0 * (x - x1) / (x0 - x1) + y1 * (x - x0) / (x1 - x0);
+
+	return f_x;
+
+}
+
+double lagrange_2nd(double x, double x0, double x1,double x2, double y0, double y1, double y2) {
+
+	double f_x = y0 * ((x-x1) * (x-x2))/((x0-x1)*(x0-x2)) + y1 * ((x - x0) * (x - x2)) / ((x1 - x0) * (x1 - x2)) + y2 * ((x - x0) * (x - x1)) / ((x2 - x0) * (x2 - x1));
+
+	return f_x;
+
+}
+
+
+// 3차 cubic spline 보간법 : m값은 m ~ m+1 인덱스에 해당하는 함수값 찾기
+double cubic_spline(double x[], double y[], int idx, double val) {
+
+	// val : x[idx] ~ x[idx+1] 사이에 있는 값이다.
+	double h = x[idx + 1] - x[idx];
+	
+	double dy2dx2[] = { 0, };
+
+	gradient2D_array(x, y, dy2dx2, sizeof(x) / sizeof(double));
+
+	double a_1 = dy2dx2[idx];
+	double a_2 = dy2dx2[idx + 1];
+
+	double f_x = (a_1 * pow((x[idx + 1] - val), 3)) / (6 * h) + a_2 * pow((val - x[idx]), 3) / (6 * h) + (y[idx + 1] / h - (a_2 * h) / 6) * (val - x[idx]) + (y[idx] / h - (a_1 * h) / 6) * (x[idx + 1] - x[idx]);
+
+
+	return f_x;
+
+}
