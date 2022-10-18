@@ -35,3 +35,9 @@
   * Trapezoidal method
   * Simpson 13 ( 2 order polynomial )
   * Simpson 38 ( 3 order polynomial )
+* Interpolation 
+  * Lagrange 1st order polynomial
+  * Lagrange 2nd order polynomial
+  * Newton 1st order polynomial
+  * Newton 2nd order polynomial
+
