@@ -15,8 +15,14 @@
   * newline ( New_line )
 
 * Taylor series to approximate Sin function , Cos function , Exponential function
+
+  * Basic idea : taylor series approximation of functions
+
+  <img src="https://user-images.githubusercontent.com/99113269/197355079-e1d2453d-b1e2-4396-bb15-2ad112b3dfa5.jpg" alt="Taylor-Series" style="zoom: 67%;" />
+
   * Input : [ rad ]
   * Input : [ deg ]
+
 * Non-linear solver
   * Bisection method
   * Newton - Raphson method
@@ -50,4 +56,12 @@
     * ...
   * Newton 1st order polynomial
   * Newton 2nd order polynomial
+
+
+
+
+
+------------------
+
+### myMatrix.h (Function definition for implementation)
 
