@@ -65,3 +65,114 @@
 
 ### myMatrix.h (Function definition for implementation)
 
+* **<u>*BAISC STRUCTURE OF MATRIX*</u>**
+
+  ```c
+  typedef struct { 
+  	double** at;
+  	int rows, cols;
+  }Matrix;
+  
+  - need double pointer to create 2nd order matrix like MxN matrix
+  ```
+
+  -------------------------------
+
+  **<u>Basic Function lists</u>**
+
+  
+
+* Matrix createMat( int _rows, int _cols )
+
+  * Function return type : Matrix
+
+  * Code structure
+
+    ```c
+    Matrix Out;
+    // 1. Allocate row array first
+    Out.at = (double**)malloc(sizeof(double*) * _rows);
+    
+    // 2. Then, allocate column 
+    for (int i = 0; i < _rows; i++)
+    	Out.at[i] = (double*)malloc(sizeof(double) * _cols);
+    	
+    	// 3. Initialize row & column values of a matrix
+    	Out.rows = _rows;
+    	Out.cols = _cols;
+    
+    	return Out;
+    ```
+
+
+
+* void freeMat ( Matrix _A )
+
+  * Free allocated column memory
+  * Free allocated row memory
+
+* void printMat ( Matrix _A , const char* _name )
+
+  * Print matrix elements
+  * Print form : name - elements
+
+* void initMat ( Matrix _A , double _val )
+
+  * Fill elements of Matrix _A with 'val'
+
+* Matrix zeros ( int _rows , int _cols )
+
+  * parameter : n ( column ) , n ( row )
+
+  * return value : Matrix 
+
+  * Code structure
+
+    ```c
+    Matrix	zeros(int _rows, int _cols)
+    {
+    	Matrix Out = createMat(_rows, _cols);
+    	initMat(Out,0);
+        
+    	return Out;
+    }
+    ```
+
+    
+
+* void copyMat ( Matrix _A , Matrix _B )
+
+  * parameter : 2 matrix
+
+  * copy elements of matrix A to those of matrix B
+
+  * Code structure
+
+    ```c
+    void copyMat(Matrix _A, Matrix _B) {
+    
+    	if (_A.cols != _B.cols || _A.rows != _B.rows) {
+    		printf("\n*************************************************");
+    		printf("\n  ERROR!!: dimension error - 'copyMat' function");
+    		printf("\n*************************************************\n");
+    		/*return createMat(0, 0);*/
+    
+    		exit(1);
+    	}
+    
+    	FOR_LOOP(i, 0, _A.rows, 1) {
+    		FOR_LOOP(j, 0, _A.cols, 1) {
+    
+    			_B.at[i][j] = _A.at[i][j];
+    		}
+    	}	
+    }
+    ```
+
+    
+
+-----------------------------------
+
+***<u>Main function lists</u>***
+
+* void gaussElim ( Matrix _A , Matrix _b , Matrix _U , Matrix _d )
