@@ -69,8 +69,10 @@
 
   ```c
   typedef struct { 
+      
   	double** at;
   	int rows, cols;
+      
   }Matrix;
   
   - need double pointer to create 2nd order matrix like MxN matrix
@@ -176,3 +178,42 @@
 ***<u>Main function lists</u>***
 
 * void gaussElim ( Matrix _A , Matrix _b , Matrix _U , Matrix _d )
+
+  * Solving a system of linear equation
+
+  * parameter : user-defined matrix _A and _b
+
+  * Usually, it is efficient to get matrix by typing elements in txt file and use 'txt2Mat' function.
+
+    * It is essential to check the path of txt file !
+    * It is essential to double check the size of matrices !
+    * If required sizes of matrices to solve any problem are not satisfied, it is set to output an error.
+
+  * A --> reduces echelon form (A) --> copy elements of A to U ( copyMat )
+
+  * size of Matrices
+
+    * _A : n x n
+    * _b : n x 1
+    * _U : n x n
+    * _d : n x 1
+
+    
+
+    
+
+    
+
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
