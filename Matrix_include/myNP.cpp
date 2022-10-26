@@ -30,10 +30,35 @@ Matrix	addMat(Matrix _A, Matrix _B)
 	return Out;
 }
 
+Matrix Matproduct(Matrix _A, Matrix _B) {
 
-Matrix	backSub(Matrix _U, Matrix _b)
+	if (_A.cols != _B.rows) {
+
+		printf("\n*************************************************");
+		printf("\n  ERROR!!: dimension error at 'Matproduct' function");
+		printf("\n*************************************************\n");
+
+		exit(1);
+	}
+
+	Matrix Out = zeros(_A.rows, _B.cols);
+
+	FOR_LOOP(k,0,_A.rows,1){
+		FOR_LOOP(i,0,_A.cols,1){
+				FOR_LOOP(j, 0, _B.cols, 1) {
+
+					Out.at[k][j] += _A.at[k][i] * _B.at[i][j];
+			}
+		}
+	}
+
+	return Out;
+}
+
+
+Matrix	backSub(Matrix _U, Matrix _d)
 {
-	if (_U.rows != _b.rows) {
+	if (_U.rows != _d.rows) {
 
 		printf("\n*************************************************");
 		printf("\n  ERROR!!: dimension error at 'backSub' function");
@@ -42,7 +67,7 @@ Matrix	backSub(Matrix _U, Matrix _b)
 		exit(1);
 	}
 
-	Matrix Out = createMat(_b.rows, 1);
+	Matrix Out = createMat(_d.rows, 1);
 	initMat(Out, 0);
 
 	double sum = 0;
@@ -53,18 +78,63 @@ Matrix	backSub(Matrix _U, Matrix _b)
 		
 		FOR_LOOP(j,i+1,_U.cols,1){
 		
-			sum = sum + (_U.at[i][j] * _b.at[j][0]);
+			sum = sum + (_U.at[i][j] * _d.at[j][0]);
 
 		}
 
-		_b.at[i][0] = (_b.at[i][0] - sum) / _U.at[i][i];
+		_d.at[i][0] = (_d.at[i][0] - sum) / _U.at[i][i];
 	}
 	
-	copyMat(_b, Out);
+	copyMat(_d, Out);
+
+	return Out;
+
+}
+
+// 후에 LU 분해할 때 검증해볼것
+Matrix	fwdSub(Matrix _U, Matrix _d)
+{
+	if (_U.rows != _d.rows) {
+
+		printf("\n*************************************************");
+		printf("\n  ERROR!!: dimension error at 'fwbSub' function");
+		printf("\n*************************************************\n");
+
+		exit(1);
+	}
+
+	Matrix Out = zeros(_d.rows,1);
+	double sum = 0;
+
+	FOR_LOOP(i, 0, _U.rows , 1) {
+
+		sum = 0;
+		FOR_LOOP(j, 0, i, 1) {
+
+			sum = sum + (_U.at[i][j] * _d.at[j][0]);
+
+		}
+
+		_d.at[i][0] = (_d.at[i][0] - sum) / _U.at[i][i];
+	}
+
+	copyMat(_d, Out);
 
 	return Out;
 
 }
 
 
-// Matrix forwardSubstitution 만들기
+void solveLU(Matrix _L, Matrix _U, Matrix _b, Matrix _x) {
+
+	Matrix _y = zeros(_b.rows,1);
+	
+	_y = fwdSub(_L,_b);
+	
+	_y = backSub(_U,_y);
+
+	copyMat(_y,_x);
+
+	freeMat(_y);
+
+}

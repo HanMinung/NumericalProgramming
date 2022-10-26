@@ -15,9 +15,18 @@ Description      : myNP.h
 #include "myMatrix.h"
 
 // Matrix addition
-extern	Matrix	addMat(Matrix _A, Matrix _B);
+extern Matrix addMat(Matrix _A, Matrix _B);
+
+// Matrix product
+extern Matrix Matproduct(Matrix _A, Matrix _B);
 
 // Apply back-substitution
-extern	Matrix	backSub(Matrix _U, Matrix _b);
+extern Matrix backSub(Matrix _U, Matrix _d);
+
+// Apply forward-substitution
+extern Matrix fwdSub(Matrix _U, Matrix _d);
+
+// solve LU decomposition
+extern void solveLU(Matrix _L, Matrix _U, Matrix _b, Matrix _x);
 
 #endif

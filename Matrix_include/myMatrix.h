@@ -45,8 +45,6 @@ extern void	printMat(Matrix _A, const char* _name);
 // initialization of Matrix elements
 extern void	initMat(Matrix _A, double _val);
 
-extern double ele(Matrix _A, uint8_t i, uint8_t j);
-
 // Create matrix of all zeros
 extern Matrix zeros(int _rows, int _cols);
 
@@ -62,11 +60,23 @@ extern Matrix transpose(Matrix _A);
 // Copy matrix ( A --> B )
 extern void copyMat(Matrix _A, Matrix _B);
 
+// Extract specific column of a matrix 
+extern Matrix vectExt(Matrix _A, int in);
+
+// Insert specific column to a matrix
+extern void vectins(Matrix _v, int in, Matrix _A);
+
+// Scalar multiplication to a matrix
+extern Matrix multiScalar(double scalar, Matrix _A);
+
+// Insert specific column of a matrix
+extern void vectins(Matrix _v, int in, Matrix _A);
+
 /*------------------------------------------------------------------*/
 
 extern void gaussElim(Matrix _A, Matrix _b, Matrix _U, Matrix _d);
 
-
+extern void LUdecomp(Matrix _A, Matrix _L, Matrix _U);
 
 
 
