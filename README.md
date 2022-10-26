@@ -189,7 +189,7 @@
     * It is essential to double check the size of matrices !
     * If required sizes of matrices to solve any problem are not satisfied, it is set to output an error.
 
-  * A --> reduces echelon form (A) --> copy elements of A to U ( copyMat )
+  * A --> row echelon form (A) --> copy elements of A to U ( copyMat )
 
   * size of Matrices
 
@@ -200,20 +200,79 @@
 
     
 
+*  Matrix backSub ( Matrix _U , Matrix _d )
+  * parameter
+    * Matrix _U  :  row echelon form of original matrix _A
+    * Matrix _b : row echelon form of original matrix _b
     
+  * pseudo code of back-substitution method
+  
+    ```c
+    // pseudo code
+    for i = n to 1
+        for j = (i+1) to n
+            X_i = { b_i - a(i)(j) * X_j }
+    	end
+    end
+    ```
+  
+    
+
+* LU decomposition ( Matrix _A , Matrix _L , Matrix _U )
+
+  * parameter
+    * Matrix _A  :  Matrix to decompose LU
+    * condition : In the case where it can be expressed in a REF form through a row contract  without a row exchange
+    * Matrix _L  :  Lower triangle matrix
+    * Matrix _U :  REF form
+
+  * After LU decomposition
+
+    * copy Matrix _A  -->  Matrix _U
+
+    * get y = ( U * X ) with forward substitution method
+    * get final X value with backward substitution method 
+
+
+
+
+* void solveLU ( Matrix _L , Matrix _U , Matrix _b , Matrix _x )
+
+  * parameter
+
+    * Matrix _L : lower triangular matrix
+    * Matrix _U : REF of original matrix by Gauss elimination
+    * Matrix _b : input
+      * Size : _L.rows x 1 
+    * Matrix _x : solution to solve decomposed elements : L U
+      * size : _L.rows x 1
+
+  * Does not need to use other statement , can be made with user-predefined functions like 'backSub', 'fwdSub'.
+
+  * Code structure :
+
+    ```c
+    void solveLU(Matrix _L, Matrix _U, Matrix _b, Matrix _x) {
+    
+    	Matrix _y = zeros(_b.rows,1);
+    	_y = fwdSub(_L,_b);
+    	_y = backSub(_U,_y);
+    
+    	copyMat(_y,_x);
+        
+    	freeMat(_y);			// free mempory allocation
+    }
+    ```
 
     
 
-    
 
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
+
+
+
+
+
+
+
+
