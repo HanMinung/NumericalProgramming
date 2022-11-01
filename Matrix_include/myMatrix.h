@@ -3,10 +3,10 @@
 
 Author           : Han,Minung
 Created          : 26-03-2018
-Modified         : 10-24-2022
+Modified         : 11-02-2022
 Language/ver     : C++ in MSVS2019
 
-Description      : myMatrix.h
+Description      : myMatrix.cpp
 ----------------------------------------------------------------*/
 
 #ifndef		_MY_MATRIX_H		// use either (#pragma once) or  (#ifndef ...#endif)
@@ -60,6 +60,15 @@ extern Matrix transpose(Matrix _A);
 // Copy matrix ( A --> B )
 extern void copyMat(Matrix _A, Matrix _B);
 
+// Extract specific row of a column
+extern Matrix rowExt(Matrix _A, int in);
+
+// Insert specific row to a Matrix
+extern void rowIns(Matrix _v, int in, Matrix _A);
+
+// Exchange two rows in Matrix
+extern void rowExchange(Matrix _A, int seq1, int seq2);
+
 // Extract specific column of a matrix 
 extern Matrix vectExt(Matrix _A, int in);
 
@@ -72,12 +81,25 @@ extern Matrix multiScalar(double scalar, Matrix _A);
 // Insert specific column of a matrix
 extern void vectins(Matrix _v, int in, Matrix _A);
 
+// Find max elements of each row
+extern Matrix row_max(Matrix _A, uint8_t k);
+
+extern int row_SP(Matrix _A, Matrix _rowMax, uint8_t k);
+
 /*------------------------------------------------------------------*/
 
 extern void gaussElim(Matrix _A, Matrix _b, Matrix _U, Matrix _d);
 
+extern void gaussElim_pivoing(Matrix _A, Matrix _b, Matrix _U, Matrix _d, Matrix _P);
+
 extern void LUdecomp(Matrix _A, Matrix _L, Matrix _U);
 
+extern void LUdecomp_pivoting(Matrix _A, Matrix _L, Matrix _U, Matrix _P);
 
+extern void solveLU(Matrix _L, Matrix _U, Matrix _b, Matrix _x);
+
+extern Matrix invMat(Matrix _A);
+
+extern void LUpivot(Matrix _A, Matrix _L, Matrix _U, Matrix _P);
 
 #endif

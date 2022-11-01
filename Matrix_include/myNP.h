@@ -1,12 +1,12 @@
 /*----------------------------------------------------------------\
 @ Numerical Programming by Young-Keun Kim - Handong Global University
 
-Author           : [YOUR NAME]
+Author           : Han,Minung
 Created          : 26-03-2018
-Modified         : 19-10-2022
+Modified         : 11-02-2022
 Language/ver     : C++ in MSVS2019
 
-Description      : myNP.h
+Description      : myMatrix.cpp
 ----------------------------------------------------------------*/
 
 #ifndef		_MY_NP_H		// use either (#pragma once) or  (#ifndef ...#endif)
@@ -26,7 +26,6 @@ extern Matrix backSub(Matrix _U, Matrix _d);
 // Apply forward-substitution
 extern Matrix fwdSub(Matrix _U, Matrix _d);
 
-// solve LU decomposition
-extern void solveLU(Matrix _L, Matrix _U, Matrix _b, Matrix _x);
+
 
 #endif
