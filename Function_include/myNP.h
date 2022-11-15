@@ -11,7 +11,7 @@ Language/ver     : C++ in MSVS2019
 Description      : myNP.cpp
 ----------------------------------------------------------------*/
 
-#define		CRT_SECURE_NO_WARNINGS
+#define		_CRT_SECURE_NO_WARNINGS
 #define		USE_MATH_DEFINES
 
 #define		PI		(	3.14159265358979323846264338327950288419716939937510582	)
@@ -19,6 +19,10 @@ Description      : myNP.cpp
 #define		FOR_LOOP(i,Initial,Final,Interval)		for(int i = Initial ; i < Final ; i = i + Interval)
 #define		New_line(N)		FOR_LOOP(i,0,N,1){printf("\n");}
 
+#define		EU		0
+#define		RK2		1
+#define		RK3     2
+#define		RK4		3
 
 #include <iostream>
 #include <string>
@@ -31,11 +35,13 @@ Description      : myNP.cpp
 
 void ErrorHandling(char* message);
 
+void print_str(const char* message);
+
 /*--------------------------------------------------------------------------------------------------------*/
 
 double	Square_Number(double _x);
 
-double   Cubic_Number(double _x);
+double  Cubic_Number(double _x);
 
 double	Four_Square_Number(double _x);
 
@@ -46,9 +52,13 @@ double	SinTaylor(double _x);
 
 double	SindTaylor(double _x);
 
+double  CosTaylor(double _x);
+
+double  CosdTaylor(double _x);
+
 double	SinTaylor_2(double _x);
 
-double ExpTaylor(double _x);
+double  ExpTaylor(double _x);
 
 /*--------------------------------------------------------------------------------------------------------*/
 
@@ -62,7 +72,7 @@ double Secant(double func(double x), double x0, double x1, double tol);
 
 void gradient1D_2Points(double x[], double y[], double dydx[], int m);
 
-void gradient1D(double x[], double y[], double dydx[], int m);
+void gradient1D_3Points(double x[], double y[], double dydx[], int m);
 
 void gradient1D_4Points(double x[], double y[], double Dy_Dx[], int m);
 
@@ -84,9 +94,11 @@ double	Trapz(double x[], double y[], int m);
 
 double  simpson13(double x[], double y[], int m);
 
-double	Integral(double func(const double x), double x, double y, int N);
+// 13 method : I = h/3 * (x[n] + 4x[n+1] + x[n+2])
+double	Integral_13(double func(const double x), double x, double y, int N);
 
-double	Integral_Simpson_38(double func(const double x), double x, double y, int N);
+// 38 method : I = 3h/8 * (x[n] + 3x[n+1] + 3x[n+2] + x[n+3])
+double	Integral_38(double func(const double x), double x, double y, int N);
 
 /*--------------------------------------------------------------------------------------------------------*/
 
@@ -94,9 +106,22 @@ double lagrange_1st(double x, double x0, double x1, double y0, double y1);
 
 double lagrange_2nd(double x, double x0, double x1, double x2, double y0, double y1, double y2);
 
-double cubic_spline(double x[], double y[], int idx, double val);
+double lagrange_nth(double x[], double y[], double xx, int length);
 
+double Newton_1st(double x, double x0, double x1, double y0, double y1);
 
+double Newton_2nd(double x, double x0, double x1, double x2, double y0, double y1, double y2);
 
+/*--------------------------------------------------------------------------------------------------------*/
 
+void ode(double func(const double t, const double v), double t0, double tf, double h, double v0, uint8_t method);
 
+void odeEU(double func(const double t, const double v), double t0, double tf, double h, double v0);
+
+void odeEM(double func(const double t, const double v), double t0, double tf, double h, double v0);
+
+void odeRK2(double func(const double t, const double v), double t0, double tf, double h, double v0);
+
+void odeRK3(double func(const double t, const double v), double t0, double tf, double h, double v0);
+
+void odeRK4(double func(const double t, const double v), double t0, double tf, double h, double v0);

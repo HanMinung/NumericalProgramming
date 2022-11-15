@@ -8,6 +8,7 @@ Language/ver     : C++ in MSVS2019
 
 Description      : myNM.h
 ----------------------------------------------------------------*/
+#define _CRT_SECURE_NO_WARNIGNS
 
 #include "myNP.h"
 
@@ -23,6 +24,14 @@ void ErrorHandling(char* message)
 	fputc('\n', stderr);
 
 	exit(1);
+
+}
+
+void print_str(const char* result) {
+
+	printf("\n****************************************************\n");
+	printf("	    Result of % s          \n",result);
+	printf("****************************************************\n\n\n");
 
 }
 
@@ -60,7 +69,6 @@ double	Factorial(double _x) {
 
 
 /*		sin 함수의 taylor series 근사 : input [rad]		with predefined function	  */					
-
 double	SinTaylor(double _x) {
 
 	int N_max = 20;
@@ -84,12 +92,42 @@ double	SinTaylor(double _x) {
 
 }
 
+
+double	CosTaylor(double _x) {
+
+	int N_max = 20;
+	int N = 0;
+	double epsilon = 1e-5;
+	double S_N = 0, S_N_prev = 0, rel_chg = 0;
+
+	do {
+
+		N++;
+		S_N_prev = S_N;
+		S_N = 0;
+
+		for (int k = 0; k < N; k++)	S_N += pow(-1, k) * pow(_x, 2 * k) / Factorial(2 * k);
+
+		rel_chg = fabs((S_N - S_N_prev) / S_N_prev);
+
+	} while (N < N_max && rel_chg >= epsilon);
+
+	return S_N;
+
+}
+
 /*		 sin 함수의 taylor series 근사 : input [deg]		*/
 
 double	SindTaylor(double _x) {
 
 	return	SinTaylor(_x * PI / 180);
-	return	SinTaylor(_x * PI / 180);
+
+}
+
+
+double	CosdTaylor(double _x) {
+
+	return	CosTaylor(_x * PI / 180);
 
 }
 
@@ -174,6 +212,9 @@ double Bisection(double func(double x), double a, double b, double tol) {
 	double epsilon = 1.0;
 	int N_max = 100;
 	int i = 0;
+
+	if (func(a) * func(b) < 0) printf("\nSolution exists between a , b \n\n");
+	else printf("\nSolution does not exist between a , b \n\n");
 
 	do {
 
@@ -285,6 +326,7 @@ double Secant(double func(double x), double x0, double x1, double tol) {
 
 /*--------------------------------------------------------------------------------------------------------*/
 
+// 2point central difference
 void gradient1D_2Points(double x[], double y[], double dydx[], int m) {
 
 	double h = x[1] - x[0];
@@ -319,8 +361,8 @@ void gradient1D_2Points(double x[], double y[], double dydx[], int m) {
 
 }
 
-// 표준함수로 설정 : 제일 많이 쓰는걸로
-void gradient1D(double x[], double y[], double dydx[], int m) {
+// 3 point forward difference
+void gradient1D_3Points(double x[], double y[], double dydx[], int m) {
 
 	double h = x[1] - x[0];		// calculate h value
 
@@ -336,17 +378,15 @@ void gradient1D(double x[], double y[], double dydx[], int m) {
 		return;
 	}
 
-	// Forward Value : 3 points
-	dydx[0] = (-3 * y[0] + 4 * y[1] - y[2]) / (2 * h);
+	//	CENTRAL VALUE	: 3 points forward difference
+	for (int k = 0; k < m - 2; k++) {
 
-	//	CENTRAL VALUE	: Two points central value 
-	for (int k = 1; k < m - 1; k++) {
-
-		dydx[k] = (y[k + 1] - y[k - 1]) / (2 * h);
+		dydx[k] = (-3 * y[k] + 4 * y[k + 1] - y[k + 2]) / (2 * h);
 
 	}
 
-	// Forward value : 3points
+	// 마지막 값들 : 3points backward 
+	dydx[m - 2] = (y[m - 4] - 4 * y[m - 3] + 3 * y[m - 2]) / (2 * h);
 	dydx[m - 1] = (y[m - 3] - 4 * y[m - 2] + 3 * y[m - 1]) / (2 * h);
 
 }
@@ -395,7 +435,7 @@ void gradientFunc(double func(const double x), double x[], double dydx[], int m)
 		printf("WARNING!: Legth of x and y are different\n\n\n");
 		return;
 	}
-	double h = x[1] - x[0]; // x축의 넓이
+	double h = x[1] - x[0]; // x interval
 
 
 
@@ -423,6 +463,7 @@ void gradientFunc(double func(const double x), double x[], double dydx[], int m)
 
 	free(y);
 }
+
 
 // 2계 미분함수 : x (array) , y (function)
 void gradient2D(double func(const double x), double x[], double dy2dx2[], int m) {
@@ -466,6 +507,7 @@ void gradient2D(double func(const double x), double x[], double dy2dx2[], int m)
 	free(y);
 
 }
+
 
 
 // 2계 미분함수 : x,y 모두 array
@@ -576,7 +618,7 @@ double  simpson13(double x[], double y[], int m) {
 }
 
 // Call function : Simpson 13
-double Integral(double func(const double x), double a, double b, int N) {
+double Integral_13(double func(const double x), double a, double b, int N) {
 
 	double I = 0;
 	double Interval = (b - a) / N;
@@ -591,18 +633,19 @@ double Integral(double func(const double x), double a, double b, int N) {
 
 	}
 
-	return I * (Interval / 3);
+	return I * (Interval / 3.0);
 
 }
 
 
-double	Integral_Simpson_38(double func(const double x), double a, double b, int N) {
+double	Integral_38(double func(const double x), double a, double b, int N) {
 
 	double I = 0;
 	double h = (b - a) / N;
 
 	I = func(a) + func(b) + 3 * func(b - 2 * h) + 3 * func(b - h);
 
+	// index : 0 ~ N-1
 	FOR_LOOP(i, 1, N - 4, 3) {
 
 		double xi = a + (i * h);
@@ -611,7 +654,7 @@ double	Integral_Simpson_38(double func(const double x), double a, double b, int 
 
 	}
 
-	return h * I * 3 / 8;
+	return h * I * (3.0) / (8.0);
 
 }
 
@@ -635,22 +678,404 @@ double lagrange_2nd(double x, double x0, double x1,double x2, double y0, double 
 }
 
 
-// 3차 cubic spline 보간법 : m값은 m ~ m+1 인덱스에 해당하는 함수값 찾기
-double cubic_spline(double x[], double y[], int idx, double val) {
+double lagrange_nth(double x[], double y[], double xx,int length) {
+	//int length = sizeof(_x)/sizeof(double);
 
-	// val : x[idx] ~ x[idx+1] 사이에 있는 값이다.
-	double h = x[idx + 1] - x[idx];
+	double sum = 0.0;
+	double product = 0.0;
+
+	// 인덱스 수 찾는 과정이 오류가 남
+	FOR_LOOP(i, 0, length, 1) {
+
+		double product = y[i];
+		FOR_LOOP(j,0, length,1) {
+
+			if (i != j) {
+
+				product = product * ((xx - x[j]) / (x[i] - x[j]));
+
+			}
+		}
+		sum = sum + product;
+	}
+
+	return sum;
+}
+
+
+double Newton_1st(double x, double x0, double x1, double y0, double y1) {
+
+	double f_x = y0 + ((y1 - y0) / (x1 - x0)) * (x - x0);
 	
-	double dy2dx2[] = { 0, };
+	return f_x;
 
-	gradient2D_array(x, y, dy2dx2, sizeof(x) / sizeof(double));
+}
 
-	double a_1 = dy2dx2[idx];
-	double a_2 = dy2dx2[idx + 1];
 
-	double f_x = (a_1 * pow((x[idx + 1] - val), 3)) / (6 * h) + a_2 * pow((val - x[idx]), 3) / (6 * h) + (y[idx + 1] / h - (a_2 * h) / 6) * (val - x[idx]) + (y[idx] / h - (a_1 * h) / 6) * (x[idx + 1] - x[idx]);
+double Newton_2nd(double x, double x0, double x1, double x2, double y0, double y1, double y2) {
 
+	double a0 = y0;
+	double a1 = (y1 - y0) / (x1 - x0);
+	double fac = (y2 - y1) / (x2 - x1) - (y1 - y0) / (x1 - x0);
+	double a2 = (fac) / (x2 - x0);
+	
+	double f_x = a0 + a1 * (x - x0) + a2 * (x - x0) * (x - x1);
 
 	return f_x;
 
+}
+
+
+/*--------------------------------------------------------------------------------------------------------*/
+
+// select which method is used to solve ODE
+// --- method ---
+//	  EU	0
+//	  RK2	1
+//	  RK3   2
+//	  RK4	3
+void ode(double func(const double t, const double v), double t0, double tf, double h, double v0, uint8_t method) {
+	
+	switch (method) {
+
+		case(0) :
+
+			odeEU(func, t0, tf, h, v0);
+			break;
+
+		case(1) :
+
+			odeRK2(func, t0, tf, h, v0);
+			break;
+		
+		case(2):
+
+			odeRK3(func, t0, tf, h, v0);
+			break;
+
+		case(3):
+
+			odeRK4(func, t0, tf, h, v0);
+			break;
+
+	}
+}
+
+
+// 오일러 method
+void odeEU(double func(const double t, const double v), double t0, double tf, double h, double v0) {
+
+	double slope = 0;
+	double N = (tf - t0) / h;
+
+	double* t = NULL;
+	double* v = NULL;
+
+	t = (double*)malloc(sizeof(double) * (N + 1)); //t  N+1 = 101 : 0~100 ==> 101개 
+	v = (double*)malloc(sizeof(double) * (N + 1));
+
+	t[0] = t0;
+	v[0] = v0;
+
+	FOR_LOOP(i,0,N,1){
+		// first slope 
+		slope = func(t[i], v[i]);
+
+		// update
+		v[i + 1] = v[i] + slope * h;
+		t[i + 1] = t[i] + h;
+
+	}
+
+	print_str("odeEU");
+
+	FOR_LOOP(i,0,N+1,1){
+
+		printf("The odeEU v[%2d] is %lf \n", i, v[i]);
+	}
+
+	New_line(2);
+
+	FILE* _fp; 
+	_fp = fopen("odeEU.txt", "wt"); 
+
+	if (_fp == NULL) {
+		printf("Fail");
+		return;
+	}
+
+	FOR_LOOP(i, 0, N + 1, 1){
+
+		fprintf(_fp, "%f\n", v[i]);  
+	}
+
+	fclose(_fp);
+
+	free(t);	free(v);
+}
+
+// 오일러 modified
+void odeEM(double func(const double t, const double v), double t0, double tf, double h, double v0) {
+
+	double N = (tf - t0) / h;
+
+	double* t = NULL;
+	double* v = NULL;
+
+	t = (double*)malloc(sizeof(double) * (N + 1));		//t  N+1 = 101 : 0~100 ==> 101개 
+	v = (double*)malloc(sizeof(double) * (N + 1));
+
+	//intial vaule
+	t[0] = t0;	
+	v[0] = v0;
+
+	// 1st slope & next slope : average --> Euler modified
+	double slope_f = 0;
+	double slope_b = 0;
+	
+	FOR_LOOP(i,0,N,1){
+
+		slope_f = func(t[i], v[i]);
+		v[i + 1] = v[i] + slope_f * h;
+
+		t[i + 1] = t[i] + h;
+		slope_b = func(t[i + 1], v[i + 1]);
+
+		// update y[i+1]
+		v[i + 1] = v[i] + (slope_b + slope_f) * h / 2;
+
+	}
+
+	print_str("odeEM");
+
+	FOR_LOOP(i, 0, N+1, 1){
+
+		printf("The odeEM t[%2d] is %lf \n", i, v[i]);
+	}
+
+	New_line(2);
+
+	FILE* _fp;
+	_fp = fopen("odeEM.txt", "wt");
+
+	if (_fp == NULL) {
+		printf("Fail");
+		return;
+	}
+
+	FOR_LOOP(i, 0, N + 1, 1) {
+
+		fprintf(_fp, "%f\n", v[i]);
+	}
+
+	fclose(_fp);
+
+	free(t);	free(v);
+
+}
+
+
+void odeRK2(double func(const double t, const double v), double t0, double tf, double h, double v0) {
+
+	double N = (tf - t0) / h;
+
+	double* t = NULL;
+	double* v = NULL;
+
+	t = (double*)malloc(sizeof(double) * (N + 1));
+	v = (double*)malloc(sizeof(double) * (N + 1));
+
+	t[0] = t0;	v[0] = v0;
+
+	double K_1 = 0;	double K_2 = 0;
+
+	//default
+	double alpha = 1;
+	double beta = alpha;
+
+	double c2 = 1 / (2 * alpha);
+	double c1 = 1 - c2;
+
+	FOR_LOOP(i,0,N,1){
+
+		K_1 = func(t[i], v[i]);
+		K_2 = func(t[i] + alpha * h, v[i] + beta * h * K_1);
+
+		v[i + 1] = v[i] + (c1 * K_1 + c2 * K_2) * h;
+
+		t[i + 1] = t[i] + h;
+	}
+
+	print_str("RK2 method");
+
+	FOR_LOOP(i,0,N+1,1){
+
+		printf("The RK2 v[%2d] is %lf \n", i, v[i]);
+	}
+
+	New_line(2);
+
+	FILE* _fp;
+	_fp = fopen("odeRK2.txt", "wt");
+
+	if (_fp == NULL) {
+		printf("Fail");
+		return;
+	}
+
+	FOR_LOOP(i, 0, N + 1, 1){
+
+		fprintf(_fp, "%f\n", v[i]);
+	}
+
+	fclose(_fp);
+
+	free(t);	free(v);
+
+}
+
+
+void odeRK3(double func(const double t, const double v), double t0, double tf, double h, double v0) {
+
+	double N = (tf - t0) / h;
+
+	double* t = NULL;
+	double* v = NULL;
+
+	t = (double*)malloc(sizeof(double) * (N + 1));
+	v = (double*)malloc(sizeof(double) * (N + 1));
+
+	t[0] = t0;	v[0] = v0;
+
+	double K_1 = 0;		
+	double K_2 = 0;		
+	double K_3 = 0;
+
+	double alpha2 = (1.0 / 2.0);		
+	double alpha3 = 1.0;
+	
+	double beta21 = (1.0 / 2.0);		
+	double beta31 = -1.0;		
+	double beta32 = 2.0;
+	
+	double c1 = 1.0 / 6.0;	
+	double c2 = 4.0 / 6.0;	
+	double c3 = 1.0 / 6.0;
+
+
+	FOR_LOOP(i, 0, N, 1) {
+
+		K_1 = func(t[i], v[i]);
+		K_2 = func(t[i] + alpha2 * h, v[i] + beta21 * K_1 * h);
+		K_3 = func(t[i] + alpha3 * h, v[i] + beta31 * K_1 * h + beta32 * K_2 * h);
+
+		v[i + 1] = v[i] + (c1 * K_1 + c2 * K_2 + c3 * K_3) * h;
+
+		t[i + 1] = t[i] + h;
+	}
+
+	print_str("RK3 method");
+
+	FOR_LOOP(i, 0, N + 1, 1) {
+
+		printf("The RK3 v[%2d] is %lf \n", i, v[i]);
+	}
+
+	New_line(2);
+
+	FILE* _fp;
+	_fp = fopen("odeRK3.txt", "wt");
+
+	if (_fp == NULL) {
+		printf("Fail");
+		return;
+	}
+
+	FOR_LOOP(i, 0, N+1, 1) {
+
+		fprintf(_fp, "%f\n", v[i]);
+	}
+
+	fclose(_fp);
+
+	free(t);	free(v);
+
+}
+
+
+void odeRK4(double func(double t, double v), double t0, double tf, double h, double v0) {
+
+	double N = (tf - t0) / h;
+
+	double* t = NULL;
+	double* v = NULL;
+
+	t = (double*)malloc(sizeof(double) * (N + 1)); //t  N+1 = 101 : 0~100 ==> 101개 
+	v = (double*)malloc(sizeof(double) * (N + 1));
+
+	//intial vaule
+	if (t != NULL && v != NULL) {
+		t[0] = t0;
+		v[0] = v0;
+	}
+	else
+		printf("NULL POINTER");
+
+	double K1 = 0;
+	double K2 = 0;
+	double K3 = 0;
+	double K4 = 0;
+
+	double alpha2 = 1.0 / 2.0;
+	double alpha3 = 1.0 / 2.0;
+	double alpha4 = 1.0;
+	double beta21 = 1.0 / 2.0;
+	double beta31 = 0;
+	double beta32 = 1.0 / 2.0;
+	double beta41 = 0.0;
+	double beta42 = 0.0;
+	double beta43 = 1.0;
+
+	double c1 = 1.0 / 6.0;
+	double c2 = 2.0 / 6.0;
+	double c3 = 2.0 / 6.0;
+	double c4 = 1.0 / 6.0;
+
+	FOR_LOOP(i, 0, N, 1) {
+
+		K1 = func(t[i], v[i]);
+		K2 = func(t[i] + 0.5 * h, v[i] + 0.5 * K1 * h);
+		K3 = func(t[i] + 0.5 * h, v[i] + 0.5 * K2 * h);
+		K4 = func(t[i] + 0.5 * h, v[i] + 0.5 * K3 * h);
+
+		v[i + 1] = v[i] + (c1 * K1 + c2 * K2 + c3 * K3 + c4 * K4) * h;
+		t[i + 1] = t[i] + h;
+	}
+
+	print_str("RK4 method");
+
+	FOR_LOOP(i, 0, N + 1, 1) {
+
+		printf("The RK4 v[%2d] is %lf \n", i, v[i]);
+	}
+
+	New_line(2);
+
+	FILE* _fp;
+	_fp = fopen("odeRK4.txt", "wt");
+
+	if (_fp == NULL) {
+		printf("Fail");
+		return;
+	}
+
+	FOR_LOOP(i, 0, N+1, 1) {
+
+		fprintf(_fp, "%f\n", v[i]);
+	}
+
+	fclose(_fp);
+
+	free(t);		free(v);
+	
 }
