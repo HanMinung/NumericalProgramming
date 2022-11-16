@@ -78,6 +78,8 @@
 
   <img src="https://user-images.githubusercontent.com/99113269/201662480-f8b4ab94-a8d1-4eba-ad2c-f91e56ca3a8c.png" alt="image" style="zoom:33%;" />
 
+  
+
 * Method 1 : Euler Explicit method
 
   * Basic idea : rectangular integral method
@@ -93,6 +95,8 @@
     3. v[i+1] = v[i] + slope * h;
        t[i+1] = t[i] + h;
     ```
+
+  
 
 * Method 2 : Euler Implicit method
 
@@ -123,7 +127,90 @@
     }
     ```
 
+  
+
 * Method 4 : 2nd order Runge-Kutta method
+
+  * utilize the weight to get better performance
+
+  * less error than above methods according to approximate weights.
+
+  * Pseudo code of 2nd order  Runge-Kutta method
+
+    ```c
+    1. get initial value : t[0] , y[0]
+    2. fix the alpha, Beta value
+        --> Coefficient (c1, c2) are fixed according to these values.
+    3. FOR_LOOP(int i = 0; i < N ; i++){
+        
+        K1 = func(t[i], y[i]);
+        K2 = func(t[i] + alpha * h, v[i] + Beta * h * K_1);
+        
+        v[i+1] = v[i] + (c1 * K_1 * c2 * K_2) * h;
+        t[i+1] = t[i] + h;
+    } 
+    ```
+
+* ODE method selector : function ODE
+
+  * Code implementation
+
+    ```c
+    void ode(double func(const double t, const double v), double t0, double tf, double h, double v0, uint8_t method) {
+    	
+    	switch (method) {
+    		case(0) :
+    			odeEU(func, t0, tf, h, v0);				// define : 0
+    			break;
+    
+    		case(1) :
+    			odeRK2(func, t0, tf, h, v0);			// define : 1
+    			break;
+    		
+    		case(2):
+    			odeRK3(func, t0, tf, h, v0);			// define : 2
+    			break;
+                
+    		case(3):
+    			odeRK4(func, t0, tf, h, v0);			// define : 3
+    			break;
+                
+    	}
+    }
+    ```
+
+  
+
+* Code implementation of every methods are finished with file printing ( .txt ) in order to compare the result with that of MATLAB.  
+
+  * MATLAB code (reference)
+
+    ```matlab
+    clear all; close all; clc;
+    
+    filepath = 'blah';
+    filename = 'blahblah';
+    
+    addpath(filepath);
+    odeEU = readmatrix('filename');
+    
+    a=0; b=0.1; h=0.001; 
+    y0 = 0;
+    
+    t=a:h:b;    ytrue(1) = y0;
+    t = t';
+    
+    [tmat,ymat] = ode45(@myFunc, [a b], y0);
+    
+    figure();
+    plot(tmat,ymat,'-r',Linewidth=1.5);
+    hold on;
+    plot(t,odeEU(:),'--blue',Linewidth=1.5);
+    hold off;
+    xlabel('x [-]',FontSize = 14); ylabel('y [-]',FontSize =14); title("ode45 , odeEU",FontSize = 14);
+    legend("ode45","odeEU",FontSize = 14);
+    grid minor;
+    ```
 
 
 
@@ -150,7 +237,9 @@
 
   -------------------------------
 
-  ***<u>Basic Function lists</u>**
+  **<u>Basic Function lists</u>**
+
+  
 
   ### Create a matrix
 
