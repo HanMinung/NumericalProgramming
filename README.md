@@ -133,7 +133,7 @@
 
   * utilize the weight to get better performance
 
-  * less error than above methods according to approximate weights.
+  * less error than above methods according to the proper weights.
 
   * Pseudo code of 2nd order  Runge-Kutta method
 
