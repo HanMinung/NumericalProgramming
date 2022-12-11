@@ -74,6 +74,10 @@
 
 ### ODE solver
 
+--------
+
+#### First order differential equation
+
 * Basic solving algorithm
 
   <img src="https://user-images.githubusercontent.com/99113269/201662480-f8b4ab94-a8d1-4eba-ad2c-f91e56ca3a8c.png" alt="image" style="zoom:33%;" />
@@ -130,6 +134,10 @@
   
 
 * Method 4 : 2nd order Runge-Kutta method
+
+  * Mathmatical background is as follow :
+
+    <img src="https://user-images.githubusercontent.com/99113269/206904714-3357f2de-71bc-482a-b6c4-e32ec0e93d65.png" alt="image" style="zoom: 50%;" />
 
   * utilize the weight to get better performance
 
@@ -211,6 +219,46 @@
     legend("ode45","odeEU",FontSize = 14);
     grid minor;
     ```
+
+
+
+#### Second order differential equation
+
+* sys2RK2
+
+  * function to solve 2nd order differential equation with 2nd order Runge-Kutta method.
+
+  * parameter : function (t, y, ydot) - differential equation , y1, y2, t0, tf , interval, initial value of z and zdot
+
+  * include file printing process to get the y value
+
+  * After printing, compare the result with that of MATLAB.
+
+  * Pseudo code 
+
+    ```c
+    1. initialization :  t0 , y0 
+    2. N = (tf - t0)/h
+    3. z = dy/dt	
+       zdot = -(k*y - c*z + F_in(t))/m;
+       
+    4. repetition
+       for(i = 0 to N-1 , 1++){
+           
+           // get each K value
+           t(i+1) = t(i) + h;
+           K_y1 = f1(t_i, y_i, z_i);
+           K_z1 = f2(t_i, y_i, z_i);
+           K_y2 = f1(t_i + h, y_i + K_y1 * h, z_i + K_z1 * h);
+           K_z2 = f1(t_i + h, y_i + K_y1 * h, z_i + K_z1 * h);
+           
+           y(i+1) = y(i) + h/2 * (K_y1 + K_y2);
+           z(i+1) = z(i) + h/2 * (K_z1 + K_z2);
+       
+       }
+    ```
+    
+    
 
 
 
@@ -328,8 +376,6 @@
 
 
 
-
-
 ### Transpose
 
 * void transpose ( Matrix _A )
@@ -390,24 +436,21 @@
 * void gaussElim ( Matrix _A , Matrix _b , Matrix _U , Matrix _d )
 
   * Solving a system of linear equation
-
   * parameter : user-defined matrix _A and _b
-
   * Usually, it is efficient to get matrix by typing elements in txt file and use 'txt2Mat' function.
 
     * It is essential to check the path of txt file !
     * It is essential to double check the size of matrices !
     * If required sizes of matrices to solve any problem are not satisfied, it is set to output an error.
-
   * A --> row echelon form (A) --> copy elements of A to U ( copyMat )
-
+  
   * size of Matrices
-
+  
     * _A : n x n
     * _b : n x 1
     * _U : n x n
     * _d : n x 1
-
+  
     
 
 ### Back substitution method
@@ -436,7 +479,7 @@
 * LU decomp ( Matrix _A , Matrix _L , Matrix _U )
 
   * parameter
-    * Matrix _A  :  Matrix to decompose LU
+    * Matrix _A  :  Matrix to decompose to L*U form
     * condition : In the case where it can be expressed in a REF form through a row contract  without a row exchange
     * Matrix _L  :  Lower triangle matrix
     * Matrix _U :  REF form
@@ -570,7 +613,118 @@
   _eigVen = eigVen(_A);
   ```
 
+
+
+### Linear regression : linear polyfit
+
+* Mathematical basis for linear regression :
+
+  <img src="https://user-images.githubusercontent.com/99113269/206892118-09e84eb8-8700-42c0-aa08-d15d3cd10e47.png" alt="image" style="zoom: 40%;" />
+
+* double LinRegress (Matrix _x, Matrix _y, double find_x)
+
+* preprocessing : convert array data to a matrix form
+
+* Get the regressed equation from a dispersed data.
+
+* Returns the value that user wants to predict from the regressed equation.
+
+* Example code
+
+  ```c
+  double find_y = 0;
+  double sol = 0;
+  // dispersed data
+  double arr_x[M] = [ - - - - - - - - - - -];
+  double arr_y[M] = [ - - - - - - - - - - -];
   
+  Matrix mat_x = arr2mat(arr_x, M, 1);
+  Matrix mat_y = arr2mat(arr_y, M, 1);
+   
+  sol = LinRegress(mat_x, mat_y, find_y);
+  ```
 
 
 
+### High order curve fitting
+
+* Mathematical basis for polyfit :
+
+  <img src="https://user-images.githubusercontent.com/99113269/206893628-e6b94b56-6591-45a1-a69f-99c23c91134c.png" alt="image" style="zoom:40%;" />
+
+* Return a matrix form filled with coefficients
+
+* If 2nd order polynomial : returns coefficients for higher order to lower sequencially. (same with return value that is from MATLAB)
+
+* parameter : Matrix _x , Matrix _y, Order of polynomial
+
+* Example code
+
+  ```c
+  Matrix sol = zeros(n,1);
+  // adjusting factor (order of polynomial)
+  int P_order = k; 			
+  
+  // dispersed data : #m data points
+  double arr_x[M] = [ - - - - - - - - - - -];
+  double arr_y[M] = [ - - - - - - - - - - -];
+  
+  Matrix mat_x = arr2mat(arr_x, M, 1);
+  Matrix mat_y = arr2mat(arr_y, M, 1);
+  
+  sol = polyfit(mat_x, mat_y, k);
+  
+  printMat(sol,"Coefficients of k_th order polynomial");
+  ```
+
+
+
+
+### System of Nonlinear equations
+
+* Consists of multiple non-linear equations that need to be solved simultaneouly.
+
+* Newton-Raphson method is applied.
+
+* parameter : initial value, defined function, according Jacobian matrix 
+
+* Mathmatical principle is as follow :
+
+  <img src="https://user-images.githubusercontent.com/99113269/206907485-18f4fef7-8669-45f7-a9ad-e95f35a44157.png" alt="image" style="zoom:50%;" />
+
+* Example code :
+
+  ```c
+  1. Precondition : 
+  	predefined F(X_k) and according Jacobian matrix of F in main code
+  2. main statement : 
+  
+  Matrix myFunc(const double _x, const double _y){
+  
+  	Matrix func = createMat(2, 1);
+  
+  	func.at[0][0] = _y - (pow(2.71828, _x / 2) + pow(2.71828, (-_x) / 2)) / 2;
+  	func.at[1][0] = 9 * pow(_x, 2) + 25 * pow(_y, 2) - 225;
+  
+  	return func;
+  }
+  
+  Matrix myJacob(const double _x, const double _y){
+  
+  	Matrix dfunc = createMat(2, 2);
+  
+  	dfunc.at[0][0] = -((pow(2.71828, _x / 2) - pow(2.71828, (-_x) / 2)) / 4);
+  	dfunc.at[0][1] = 1;
+  	dfunc.at[1][0] = 18 * _x;
+  	dfunc.at[1][1] = 50 * _y;
+  
+  	return dfunc;
+  }
+  
+  3. Matrix sol = zeros(2,1);
+     sol = solve_nonlinear(Z, myFunc, myJacob);
+  
+  4. printMat(sol,"solution of non-linear system");
+  ```
+
+  
