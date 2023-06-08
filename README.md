@@ -1,6 +1,6 @@
 # Numerical Programming
 
-* Author : HanMinung
+* Author : HanMinwoong
 * Modified : 2022.11.12
 * Mechanical and Control Engineering , Handong Global University
 
